@@ -9,6 +9,7 @@ router = APIRouter(
     tags=["posts"]
 )
 
+
 # Авторизация через OAuth2
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 

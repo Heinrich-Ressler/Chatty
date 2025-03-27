@@ -6,7 +6,7 @@ class UserCreate(BaseModel):
     password: str
     nickname: str
 
-# Схема входа
+# Схема входа:
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
