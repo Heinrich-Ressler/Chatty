@@ -40,7 +40,7 @@
 - Содержит команды для создания и удаления таблиц и индексов.
 
   
-- Используемые команды
+- Используемые команды:
 
 - alembic init alembic
 - создание файла миграции: alembic revision --autogenerate -m "Initial migration"
