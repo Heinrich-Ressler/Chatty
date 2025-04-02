@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from . import posts, auth
-
+from post import posts
+from auth import auth
 
 app = FastAPI()
 
