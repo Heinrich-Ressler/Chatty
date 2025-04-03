@@ -11,7 +11,7 @@ router = APIRouter(
 
 
 # Авторизация через OAuth2
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth_service/login")
 
 # Получить сессию БД
 def get_db():
@@ -56,7 +56,7 @@ def update_post(post_id: int, post: schemas.PostCreate, db: Session = Depends(ge
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
     if db_post.user_id != current_user["user_id"]:
-        raise HTTPException(status_code=403, detail="You are not the author of this post")
+        raise HTTPException(status_code=403, detail="You are not the author of this post_service")
     db_post.title = post.title
     db_post.content = post.content
     db.commit()
@@ -70,7 +70,7 @@ def delete_post(post_id: int, db: Session = Depends(get_db), current_user: dict 
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
     if db_post.user_id != current_user["user_id"]:
-        raise HTTPException(status_code=403, detail="You are not the author of this post")
+        raise HTTPException(status_code=403, detail="You are not the author of this post_service")
     db.delete(db_post)
     db.commit()
     return {"message": "Post deleted successfully"}
