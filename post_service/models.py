@@ -1,20 +1,38 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from app.db_base import Base  # Импортируем Base из db_base.py
+from .database import Base
 
-
-
-
-# Модель поста
 class Post(Base):
     __tablename__ = "posts"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
-    title = Column(String, index=True)
-    content = Column(Text)
+    title = Column(String(255), nullable=False)
+    content = Column(Text, nullable=False)
+    author_id = Column(Integer, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    image_url = Column(String, nullable=True)  # ссылка на изображение
+
+    comments = relationship("Comment", back_populates="post", cascade="all, delete")
+    likes = relationship("Like", back_populates="post", cascade="all, delete")
+
+class Comment(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    content = Column(Text, nullable=False)
+    post_id = Column(Integer, ForeignKey("posts.id"))
+    author_id = Column(Integer, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    # Связь с автором поста
-    author = relationship("User", back_populates="posts")
+    post = relationship("Post", back_populates="comments")
+
+class Like(Base):
+    __tablename__ = "likes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    post_id = Column(Integer, ForeignKey("posts.id"))
+    user_id = Column(Integer)
+
+    post = relationship("Post", back_populates="likes")
+

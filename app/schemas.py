@@ -1,35 +1,62 @@
+from pydantic import BaseModel
+from typing import List, Any
+from fastapi import Form
 from pydantic import BaseModel, EmailStr
 
-# Схема регистрации
+
+class SubscriptionCreate(BaseModel):
+    user_id: int
+
+    class Config:
+        from_attributes = True
+
+class Post(BaseModel):
+    id: int
+    user_id: int
+    title: str
+    content: str
+    created_at: str
+
+    class Config:
+        from_attributes = True
+
+class PostCreate(BaseModel):
+    title: str
+    content: str
+
+    class Config:
+        from_attributes = True
+
+
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
     nickname: str
 
-# Схема входа:
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
+    class Config:
+        from_attributes = True
 
-# Ответ пользователю (без пароля)
-class UserResponse(BaseModel):
-    id: int
-    email: EmailStr
-    nickname: str
+class UserLogin(BaseModel):
+    email: str
 
     class Config:
-        orm_mode = True  # для совместимости с ORM
+        from_attributes = True
 
-# Схема для создания поста
-class PostCreate(BaseModel):
-    title: str
-    content: str
 
-# Схема для ответа по посту
-class Post(PostCreate):
+class UserRead(BaseModel):
     id: int
-    user_id: int
-    created_at: str
+    email: EmailStr
 
     class Config:
         orm_mode = True
+
+
+class EmailPasswordForm:
+    def __init__(
+        self,
+        email: str = Form(...),
+        password: str = Form(...)
+    ):
+        self.username = email  # чтобы не ломался код, который ожидает .username
+        self.password = password
+
