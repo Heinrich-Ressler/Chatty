@@ -35,3 +35,4 @@ class Like(Base):
     user_id = Column(Integer)
 
     post = relationship("Post", back_populates="likes")
+
