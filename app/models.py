@@ -11,6 +11,7 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     password_hash = Column(String, nullable=False)
     nickname = Column(String, unique=True, nullable=False)
+    role = Column(String, nullable=False, default="user")
 
     # Связь: один пользователь — много постов
     posts = relationship("Post", back_populates="author")
