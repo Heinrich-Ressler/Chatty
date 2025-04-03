@@ -1,23 +1,21 @@
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from .. import models
-from ..database import init_db
+from app import models
+from app.database import get_db
 
+#Заменили схему авторизации на Bearer через заголовок Authorization
+oauth2_scheme = HTTPBearer()
 
-oauth2_sheme = HTTPBearer()
-
-SECRET_KEY = "secret"
+SECRET_KEY = "super-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
@@ -25,9 +23,9 @@ def get_password_hash(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
-def creat_access_token(data: dict, expires_delta: timedelta = None):
+def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return token
@@ -41,10 +39,10 @@ async def authenticate_user(db: AsyncSession, email: str, password_hash: str):
         return False
     return user
 
-async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(oauth2_sheme), db: AsyncSession = Depends(init_db)):
-    credentials_exception = HTTPException(
+async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+    credentials_exeption = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate AUTHORISATION",
+        detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
@@ -65,5 +63,6 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(o
         raise credentials_exception
 
     return user
+
 
 
