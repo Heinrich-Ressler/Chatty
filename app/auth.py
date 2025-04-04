@@ -1,40 +1,48 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import timedelta
 
+from fastapi.security import OAuth2PasswordRequestForm
+from datetime import timedelta
 from app.database import get_db
-from app.utils.security import (
-    authenticate_user,
-    create_access_token,
-)
+from app.utils.security import authenticate_user, create_access_token, get_password_hash, get_current_user
 from app.schemas import EmailPasswordForm  # Кастомная форма
 from app import models, schemas
-from app.utils.security import get_password_hash
+
+
 from sqlalchemy import select
 
 router = APIRouter()
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-@router.post(
-    "/token",
-    summary="Авторизация по email и паролю",
-    description="Отправьте email и пароль, чтобы получить access token."
-)
+
+@router.post("/token",summary="получи Токен", description="Введи свой маил, и пароль" )
 async def login_for_access_token(
-    form_data: EmailPasswordForm = Depends(),
-    db: AsyncSession = Depends(get_db)
+        form_data: OAuth2PasswordRequestForm = Depends(),
+        db: AsyncSession = Depends(get_db)
 ):
     user = await authenticate_user(db, form_data.username, form_data.password)
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect email or password")
+        raise HTTPException(401, "Неверные логин или пароль")
+
 
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.email},
         expires_delta=access_token_expires
     )
+
+
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.get("/verify", summary="проверь подключен ли Токен", description="Если Токен подключён, увидишь свой маил")
+async def verify_token(
+        user: models.User = Depends(get_current_user)
+):
+
+    return {"username": user.email}
+
 
 
 @router.post(

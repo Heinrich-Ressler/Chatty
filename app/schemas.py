@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+
 from typing import List, Any
 from fastapi import Form
 from pydantic import BaseModel, EmailStr
@@ -10,6 +10,7 @@ class SubscriptionCreate(BaseModel):
     class Config:
         from_attributes = True
 
+
 class Post(BaseModel):
     id: int
     user_id: int
@@ -20,6 +21,10 @@ class Post(BaseModel):
     class Config:
         from_attributes = True
 
+
+
+# Схема для создания поста
+
 class PostCreate(BaseModel):
     title: str
     content: str
@@ -27,6 +32,11 @@ class PostCreate(BaseModel):
     class Config:
         from_attributes = True
 
+
+
+
+
+# Схема регистрации
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -36,6 +46,10 @@ class UserCreate(BaseModel):
     class Config:
         from_attributes = True
 
+
+
+# Схема входа:
+
 class UserLogin(BaseModel):
     email: str
 
@@ -43,12 +57,29 @@ class UserLogin(BaseModel):
         from_attributes = True
 
 
+
+    class Config:
+        from_attributes = True
+
+
+# Ответ пользователю (без пароля)
+class UserResponse(BaseModel):
+
+    id: int
+    email: EmailStr
+
+    class Config:
+
+        from_attributes = True
+
 class UserRead(BaseModel):
     id: int
     email: EmailStr
 
     class Config:
         orm_mode = True
+
+
 
 
 class EmailPasswordForm:
@@ -59,4 +90,10 @@ class EmailPasswordForm:
     ):
         self.username = email  # чтобы не ломался код, который ожидает .username
         self.password = password
+
+
+
+
+class TokenData(BaseModel):
+    email: str | None = None
 
