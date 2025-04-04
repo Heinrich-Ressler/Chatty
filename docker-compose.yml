@@ -1,0 +1,74 @@
+version: "3.8"
+
+services:
+  auth:
+    build: ./auth_service
+    container_name: auth_service
+    ports:
+      - "8003:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@auth_db/auth
+    depends_on:
+      - auth_db
+
+  post:
+    build: ./post_service
+    container_name: post_service
+    ports:
+      - "8006:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@post_db/post
+    depends_on:
+      - post_db
+
+  subscription:
+    build: ./subscription_service
+    container_name: subscription_service
+    ports:
+      - "8007:8000"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://user:password@subscription_db/subscription
+      - AUTH_SERVICE_URL=http://auth:8000
+      - POST_SERVICE_URL=http://post:8000
+    depends_on:
+      - subscription_db
+      - auth
+      - post
+
+  auth_db:
+    image: postgres:15
+    container_name: auth_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auth
+    ports:
+      - "5433:5432"
+
+  post_db:
+    image: postgres:15
+    container_name: post_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: post
+    ports:
+      - "5434:5432"
+
+  subscription_db:
+    image: postgres:15
+    container_name: subscription_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: subscription
+    ports:
+      - "5435:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+

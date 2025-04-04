@@ -1,3 +1,5 @@
+from sqlalchemy import func
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
@@ -29,3 +31,12 @@ class Post(Base):
 
     # Связь с автором поста
     author = relationship("User", back_populates="posts")
+
+
+class Subscription(Base):
+    __tablename__ = "subscriptions"
+    id = Column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    follower_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    created_at: Mapped[DateTime] = mapped_column(default=func.now())
+

@@ -1,11 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 from app.database import get_db
 from app.utils.security import authenticate_user, create_access_token, get_password_hash, get_current_user
 from app.schemas import EmailPasswordForm  # Кастомная форма
 from app import models, schemas
+
+
 from sqlalchemy import select
 
 router = APIRouter()
@@ -22,11 +25,13 @@ async def login_for_access_token(
     if not user:
         raise HTTPException(401, "Неверные логин или пароль")
 
+
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
         data={"sub": user.email},
         expires_delta=access_token_expires
     )
+
 
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -37,6 +42,7 @@ async def verify_token(
 ):
 
     return {"username": user.email}
+
 
 
 @router.post(
@@ -66,5 +72,4 @@ async def register_user(
     await db.refresh(user)
 
     return user
-
 
