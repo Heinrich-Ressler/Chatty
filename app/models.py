@@ -2,6 +2,10 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.db_base import Base  # Импортируем Base из db_base.py
+from dotenv import load_dotenv
+
+
+load_dotenv()  # По умолчанию ищет .env в корне проекта
 
 # Модель пользователя
 class User(Base):

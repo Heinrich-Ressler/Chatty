@@ -3,6 +3,9 @@ from sqlalchemy.orm import Session
 from app import schemas, models, database
 from fastapi.security import OAuth2PasswordBearer
 from typing import List
+from dotenv import load_dotenv
+
+load_dotenv()  # По умолчанию ищет .env в корне проекта
 
 router = APIRouter(
     prefix="/posts",
