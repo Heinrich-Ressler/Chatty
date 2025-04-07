@@ -10,6 +10,7 @@ load_dotenv(
 )
 
 class Settings(BaseSettings):
+
     # Основная БД
     DB_HOST: str
     DB_PORT: str

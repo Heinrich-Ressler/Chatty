@@ -11,7 +11,7 @@ from app.database import get_db
 #Заменили схему авторизации на Bearer через заголовок Authorization
 oauth2_scheme = HTTPBearer()
 
-SECRET_KEY = "secret"
+SECRET_KEY = "super-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
@@ -25,7 +25,7 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return token
@@ -40,9 +40,11 @@ async def authenticate_user(db: AsyncSession, email: str, password_hash: str):
     return user
 
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)):
+
     credentials_exception = HTTPException(
+
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate AUTHORISATION",
+        detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
 
@@ -63,5 +65,6 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(o
         raise credentials_exception
 
     return user
+
 
 
