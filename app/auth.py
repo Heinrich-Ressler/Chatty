@@ -72,4 +72,3 @@ async def register_user(
     await db.refresh(user)
 
     return user
-

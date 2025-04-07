@@ -2,6 +2,9 @@
 from typing import List, Any
 from fastapi import Form
 from pydantic import BaseModel, EmailStr
+from dotenv import load_dotenv
+
+load_dotenv()  # По умолчанию ищет .env в корне проекта
 
 
 class SubscriptionCreate(BaseModel):
@@ -77,7 +80,7 @@ class UserRead(BaseModel):
     email: EmailStr
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 
