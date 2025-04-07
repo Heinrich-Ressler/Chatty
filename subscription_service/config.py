@@ -1,22 +1,27 @@
-from pydantic_settings import BaseSettings
-from functools import lru_cache
-from pydantic_settings import BaseSettings
-from functools import lru_cache
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:Tabasalu7@localhost:5432/subscription_db"
-    AUTH_SERVICE_URL: str = "http://auth:8000"
-    POST_SERVICE_URL: str = "http://post:8000"
-    SECRET_KEY: str = "super-secret-key"  # для токенов
-    ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+class SubscriptionSettings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file='.env.local', extra='ignore', case_sensitive=False
+    )
 
-    class Config:
-        env_file = ".env"
+    db_host: str = 'subscription_db'
+    db_port: int = 5432
+    db_name: str = 'SubscriptionDB'
+    db_user: str = 'postgres'
+    db_password: str = 'postgres'
 
-@lru_cache()
-def get_settings():
-    return Settings()
+    @property
+    def async_database_url(self) -> str:
+        return f'postgresql+asyncpg://{self.db_user}:{self.db_password}@{self.db_host}:{self.db_port}/{self.db_name}'
 
-settings = get_settings()
+settings = SubscriptionSettings()
+
+
+
+
+
+
+
+
 

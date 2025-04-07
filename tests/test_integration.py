@@ -1,9 +1,9 @@
 import pytest
 import httpx
 
-BASE_URL = "http://localhost:8000"  # subscription_service
-AUTH_URL = "http://localhost:8001"  # auth_service
-POST_URL = "http://localhost:8002"  # post_service
+BASE_URL = "http://localhost:8007"  #subscription_service
+AUTH_URL = "http://localhost:8003"  #auth_service
+POST_URL = "http://localhost:8006"  #post_service
 
 @pytest.mark.asyncio
 async def test_full_subscription_flow():
