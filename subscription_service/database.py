@@ -1,23 +1,24 @@
-from typing import Any, AsyncGenerator
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+from config import settings
 
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase
-from app.config import settings
 
-# Создаём асинхронный движок SQLAlchemy
-engine = create_async_engine(settings.DATABASE_URL, echo=True)
+# создание движка с пулом подключений
+engine = create_async_engine(
+    settings.async_database_url,
+    pool_size=5,          # Сколько соединений держать всегда открытыми
+    max_overflow=10,      # Сколько доп. соединений открыть при пиковой нагрузке
+    pool_timeout=30,      # Как долго ждать освобождения коннекта (сек)
+    pool_recycle=1800,    # Время жизни одного соединения (секунды)
+    echo=False,            # (опционально) логирует SQL-запросы
+)
 
-# Асинхронный фабричный метод для сессий
-AsyncSessionLocal = async_sessionmaker(
+AsyncSessionLocal = sessionmaker(
     bind=engine,
+    class_=AsyncSession,
     expire_on_commit=False
 )
 
-# Базовый класс для моделей
-class Base(DeclarativeBase):
-    pass
-
-# Dependency для FastAPI — получение сессии
-async def get_db() -> AsyncGenerator[AsyncSession, Any]:
-    async with AsyncSessionLocal() as session:
-        yield session
+async def get_db():
+    async with AsyncSessionLocal() as db:
+        yield db

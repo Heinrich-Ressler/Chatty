@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, delete, select
 
-from subscription_service import deps, schemas
-from subscription_service.models import Subscription
+import deps, schemas
+from models import Subscription
 
 router = APIRouter()
 

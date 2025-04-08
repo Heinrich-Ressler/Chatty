@@ -3,9 +3,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from typing import List
 
-from subscription_service import schemas, deps
-from subscription_service.models import Subscription
-from subscription_service.utils.external import fetch_posts_for_users
+import schemas, deps
+from models import Subscription
+from utils.external import fetch_posts_for_users
 
 router = APIRouter()
 
