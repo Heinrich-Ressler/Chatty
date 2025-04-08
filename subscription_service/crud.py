@@ -3,6 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from models import Subscription
 from db import SessionLocal
 
+
 async def subscribe(follower_id: int, user_id: int):
     async with SessionLocal() as session:
         sub = Subscription(user_id=user_id, follower_id=follower_id)

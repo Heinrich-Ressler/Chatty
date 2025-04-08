@@ -2,6 +2,7 @@ import httpx
 from fastapi import HTTPException, Request
 from config import settings
 
+
 async def get_current_user_id(request: Request) -> int:
     token = request.headers.get("Authorization")
     if not token:

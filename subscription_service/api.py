@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Request
 import crud, schemas, clients
 
+
 router = APIRouter()
 
 @router.post("/subscribe/{user_id}")
