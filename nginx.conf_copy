@@ -1,0 +1,89 @@
+user  nginx;
+worker_processes  1;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    upstream auth_service {
+        server auth_service_backend:8080;
+    }
+
+    upstream post_service {
+        server post_service_backend:8081;
+    }
+
+    upstream subscription_service {
+        server subscription_service_backend:8082;
+    }
+
+    server {
+        listen 80;
+
+        # Location block for authentication service
+        location /auth/ {
+            proxy_pass http://auth_service;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Location block for post service with authentication
+        location /post/ {
+            auth_request /auth;
+            auth_request_set $auth_status $upstream_status;
+
+            # If authentication is successful, proxy the request to the post service
+            if ($auth_status = 200) {
+                proxy_pass http://post_service;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # Return appropriate status codes for failed authentication
+            if ($auth_status = 401) {
+                return 401;
+            }
+
+            if ($auth_status = 403) {
+                return 403;
+            }
+        }
+
+        # Location block for subscription service with authentication
+        location /subscription/ {
+            auth_request /auth;
+            auth_request_set $auth_status $upstream_status;
+
+            # If authentication is successful, proxy the request to the subscription service
+            if ($auth_status = 200) {
+                proxy_pass http://subscription_service;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+
+            # Return appropriate status codes for failed authentication
+            if ($auth_status = 401) {
+                return 401;
+            }
+
+            if ($auth_status = 403) {
+                return 403;
+            }
+        }
+
+        # Internal location for handling authentication requests
+        location = /auth {
+            internal;
+            proxy_pass http://auth_service;
+            proxy_set_header Content-Length "";
+            proxy_set_header X-Original-URI $request_uri;
+        }
+    }
+}
