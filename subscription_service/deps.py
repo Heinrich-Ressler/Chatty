@@ -6,6 +6,7 @@ from database import get_db
 from config import settings
 import httpx
 
+
 oauth2_scheme = HTTPBearer()
 
 async def get_current_user(

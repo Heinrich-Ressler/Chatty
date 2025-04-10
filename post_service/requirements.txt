@@ -1,6 +1,12 @@
+alembic
+asyncpg
 fastapi
 uvicorn
 sqlalchemy
+psycopg2-binary
 pydantic
-alembic
+pydantic-settings
+python-jose
 python-multipart
+pika
+wheel

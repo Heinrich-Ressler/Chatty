@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
+import models, schemas
 
 # Посты
 def create_post(db: Session, post: schemas.PostCreate):

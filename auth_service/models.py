@@ -1,18 +1,14 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
-from sqlalchemy.orm import relationship
-from datetime import datetime
-from app.db_base import Base  # Импортируем Base из db_base.py
+from sqlalchemy import Column, Integer, String, DateTime, Text, Table, ForeignKey, func
+from sqlalchemy.orm import declarative_base, Mapped, mapped_column, relationship
 
-# Модель пользователя
+Base = declarative_base()
+
+
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
-    email = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
-    nickname = Column(String, unique=True, nullable=False)
-
-    # Связь: один пользователь — много постов
-    posts = relationship("Post", back_populates="author")
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(String, unique=True, index=True)
+    hashed_password: Mapped[str] = mapped_column(String)
 
 

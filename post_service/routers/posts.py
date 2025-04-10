@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from .. import models, schemas, crud
-from ..database import SessionLocal
+import models, schemas, crud
+from database import SessionLocal
 import os
 from fastapi import UploadFile, File
 from uuid import uuid4
@@ -98,4 +98,3 @@ def upload_image(post_id: int, file: UploadFile = File(...), db: Session = Depen
     db.refresh(post)
 
     return {"message": "Изображение загружено", "image_url": post.image_url}
-

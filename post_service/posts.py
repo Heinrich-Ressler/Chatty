@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from app import schemas, models, database
+import schemas, models, database
 from fastapi.security import OAuth2PasswordBearer
 from typing import List
 
@@ -74,3 +74,4 @@ def delete_post(post_id: int, db: Session = Depends(get_db), current_user: dict 
     db.delete(db_post)
     db.commit()
     return {"message": "Post deleted successfully"}
+

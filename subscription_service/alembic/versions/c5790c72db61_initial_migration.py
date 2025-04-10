@@ -43,7 +43,6 @@ def upgrade() -> None:
 
     op.create_table(
         'subscriptions',
-        sa.Column('id', sa.Integer(), primary_key=True, nullable=False),
         sa.Column('user_id', sa.Integer(), sa.ForeignKey('users.id', ondelete="CASCADE"), primary_key=True, nullable=False),
         sa.Column('follower_id', sa.Integer(), sa.ForeignKey('users.id', ondelete="CASCADE"), primary_key=True, nullable=False),
         sa.Column('created_at', sa.DateTime(), server_default=sa.func.now(), nullable=True)
