@@ -1,7 +1,7 @@
 import httpx
 from fastapi import HTTPException
 
-from config import settings
+from app.config import settings
 
 
 async def fetch_user_by_token(token: str) -> dict:

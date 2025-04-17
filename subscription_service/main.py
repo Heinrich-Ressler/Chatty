@@ -1,14 +1,26 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from routers.feed import router as feed_router
-from routers.subscription import router as subscription_router
+from faststream.rabbit.fastapi import RabbitRouter
+from app.broker.consumer import broker
+from app.routers import feed
+from fastapi import FastAPI
+from app.routers import feed, subscription
+from app.broker.consumer import broker
 from faststream.rabbit.fastapi import RabbitRouter, Logger
 
+
 router = RabbitRouter("amqp://guest:guest@rabbitmq:5672/")
-app = FastAPI(
-    title="Subscription Service",
-    version="1.0.0"
-)
+
+@router.subscriber("test")
+@router.publisher("response")
+async def hello(message, logger: Logger):
+    logger.info(message)
+    return "Hello, response!"
+
+
+@router.subscriber("test")
+async def get_message(message, logger: Logger):
+    logger.info(message)
+
 
 app = FastAPI(
     title="Subscription API",
@@ -20,16 +32,25 @@ app = FastAPI(
     root_path_in_servers=True  # включаем генерацию серверов с префиксом
 )
 
-
-@app.get("/send")
-async def hello_http():
-    await router.broker.publish("Hello, Rabbit!", queue="test")
-    return "Message sent"
-
 # Подключаем роутеры
-app.include_router(subscription_router, prefix="/subscriptions", tags=["Subscriptions"])
-app.include_router(feed_router, prefix="/feed", tags=["Feed"])
+app.include_router(feed.router, prefix="/feed", tags=["Feed"])
+app.include_router(subscription.router, prefix="/subscriptions", tags=["Subscriptions"])
+app.include_router(router)
 
 @app.get("/")
 def read_root():
     return {"message": "Subscription Service is running"}
+
+@app.get("/send")
+async def send_message():
+   await router.broker.publish("Hello, Rabbit!", queue="test")
+   return "Message sent"
+
+
+@router.subscriber("test")
+async def get_message(message, logger):
+   logger.info(message)
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(broker.start())

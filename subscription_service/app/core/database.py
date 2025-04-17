@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
-from config import settings
+from subscription_service.app.core.config import settings
 
 
 # создание движка с пулом подключений

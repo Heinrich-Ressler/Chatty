@@ -3,15 +3,13 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import timedelta
-
-
 from database import get_db
 import models
 from utils.security import authenticate_user, create_access_token, get_current_user
 
 router = APIRouter()
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # можно также вынести в настройки
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
 
 @router.post("/token")

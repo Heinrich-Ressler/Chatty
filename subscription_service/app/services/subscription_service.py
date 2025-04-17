@@ -1,8 +1,7 @@
 from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
-from models import Subscription
-from db import SessionLocal
-
+from app.models.models import Subscription
+from app.core.db import SessionLocal
 
 async def subscribe(follower_id: int, user_id: int):
     async with SessionLocal() as session:
@@ -29,4 +28,11 @@ async def get_following(user_id: int):
         result = await session.execute(
             select(Subscription.user_id).where(Subscription.follower_id == user_id)
         )
-        return [row[0] for row in result.all()]
+        return [row[0] for row in result.fetchall()]
+
+async def get_followers_ids(user_id: int):
+    async with SessionLocal() as session:
+        result = await session.execute(
+            select(Subscription.follower_id).where(Subscription.user_id == user_id)
+        )
+        return [row[0] for row in result.fetchall()]

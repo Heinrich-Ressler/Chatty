@@ -1,24 +1,14 @@
-import pika
-import json
+from utils.cache import invalidate_feeds_of_followers
+from subscription_service.app import get_followers_ids
+
+async def handle_post_created(user_id: int):
+    follower_ids = await get_followers_ids(user_id)
+    await invalidate_feeds_of_followers(follower_ids)
 
 def callback(ch, method, properties, body):
     event = json.loads(body)
     print(f"Received event: {event}")
-    if event['event'] == "User Registered":
-        # Логика обработки события "User Registered"
-        pass
 
-def listen_for_events():
-    connection = pika.BlockingConnection(
-        pika.ConnectionParameters(host='rabbitmq'))
-    channel = connection.channel()
+    if event['event'] == "PostCreated":
+        asyncio.run(handle_post_created(event['user_id']))
 
-    channel.queue_declare(queue='events')
-
-    channel.basic_consume(queue='events', on_message_callback=callback, auto_ack=True)
-
-    print('Waiting for messages. To exit press CTRL+C')
-    channel.start_consuming()
-
-# Пример использования
-listen_for_events()
