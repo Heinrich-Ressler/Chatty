@@ -51,7 +51,7 @@ class PostClient:
             raise HTTPException(status_code=500, detail="Post service error")
 
 
-# Удобный короткий доступ
+# Удобный короткий доступ, если хочешь использовать напрямую
 auth_client = AuthClient()
 post_client = PostClient()
 

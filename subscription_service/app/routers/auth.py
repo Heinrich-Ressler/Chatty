@@ -9,7 +9,7 @@ from utils.security import authenticate_user, create_access_token, get_current_u
 
 router = APIRouter()
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 30  # можно также вынести в настройки
 
 
 @router.post("/token")
